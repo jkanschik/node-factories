@@ -4,7 +4,15 @@
   "description": "A library for creating test objects in node.js",
   "main": "lib/index.js",
   "scripts": {
-    "test": "./node_modules/mocha/bin/mocha --reporter spec"
+    "test": "grunt",
+    "travis-cov": {
+      "threshold": 100
+    }
+  },
+  "config": {
+    "blanket": {
+      "pattern": "node-factories/lib/"
+    }
   },
   "repository": {
     "type": "git",
@@ -20,6 +28,10 @@
   },
   "devDependencies": {
     "should": "~2.1.1",
-    "mocha": "~1.16.2"
+    "grunt": "~0.4.2",
+    "grunt-mocha-test": "~0.8.1",
+    "grunt-contrib-jshint": "~0.8.0",
+    "blanket": "~1.1.6",
+    "travis-cov": "~0.2.4"
   }
 }
