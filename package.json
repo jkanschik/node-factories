@@ -4,7 +4,7 @@
   "description": "A library for creating test objects in node.js",
   "main": "lib/index.js",
   "scripts": {
-    "test": "mocha --reporter spec"
+    "test": "./node_modules/mocha/bin/mocha --reporter spec"
   },
   "repository": {
     "type": "git",
@@ -19,6 +19,7 @@
     "url": "https://github.com/jkanschik/node-factories/issues"
   },
   "devDependencies": {
-    "should": "~2.1.1"
+    "should": "~2.1.1",
+    "mocha": "~1.16.2"
   }
 }
