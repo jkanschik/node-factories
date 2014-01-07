@@ -126,7 +126,7 @@ xdescribe('Traits', function() {
 
 });
 
-xdescribe('Sequences', function() {
+describe('Sequences', function() {
 
   it('should start with 0 and increase on every build()', function() {
     factories
@@ -140,7 +140,7 @@ xdescribe('Sequences', function() {
       .name.should.equal('Person_11');
   });
 
-  it('can be used for nested attributes using dot notation', function() {
+  xit('can be used for nested attributes using dot notation', function() {
     factories
       .define('withNestedSequence', {})
       .sequence('nested.name', function(i) {return 'Person_' + i;});
@@ -150,7 +150,7 @@ xdescribe('Sequences', function() {
       .nested.name.should.equal('Person_1');
   });
 
-  it('can be defined globally for all factories', function() {
+  xit('can be defined globally for all factories', function() {
     factories.sequence('nameOfSequence', function(i) {return i;});
     factories
       .define('withGlobalSequence')
