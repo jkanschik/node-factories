@@ -42,6 +42,10 @@ describe('Definition of factories', function() {
     count.should.equal(2);
   });
 
+  it('can be defined without template', function() {
+    factories.define('withoutTemplate');
+    factories.withoutTemplate.build().should.eql({});
+  });
 });
 
 describe('Building objects', function() {
@@ -150,16 +154,15 @@ describe('Sequences', function() {
       .nested.name.should.equal('Person_1');
   });
 
-  xit('can be defined globally for all factories', function() {
+  it('can be defined globally for all factories', function() {
     factories.sequence('nameOfSequence', function(i) {return i;});
     factories
       .define('withGlobalSequence')
       .sequence('nameOfSequence');
     factories.withGlobalSequence.build()
       .nameOfSequence.should.equal(0);
-    factories.sequence('nameOfSequence')().should.equal(1);
     factories.withGlobalSequence.build()
-      .nameOfSequence.should.equal(2);
+      .nameOfSequence.should.equal(1);
   });
 });
 
