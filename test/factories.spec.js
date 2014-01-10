@@ -2,17 +2,13 @@
 require('should');
 var factories = require('../lib');
 
-describe('Definition of factories', function() {
+var User = function() {};
+User.prototype.upperName = function() { return this.name.toUpperCase(); };
 
-  it('creates objects using the given constructor', function() {
-    var User = function() {};
-    User.prototype.upperName = function() { return this.name.toUpperCase(); };
-    factories.define('userWithConstructor', User, {name: 'user name'});
-    var user = factories.userWithConstructor.build();
-    user.should.be.instanceOf(User);
-    user.name.should.equal('user name');
-    user.upperName().should.equal('USER NAME');
-  });
+factories.define('user', {name: 'user name'});
+factories.define('userWithConstructor', User, {name: 'user name'});
+
+describe('Definition of factories', function() {
 
   it('can be nested in arbitrary depth', function() {
     var template = {level: 1, nested: {level: 2, nested: {level: 3}}};
@@ -50,22 +46,73 @@ describe('Definition of factories', function() {
 
 describe('Building objects', function() {
   
-  before(function() {
-    factories.define('User', {name: 'User name'});
-  });
+  describe('attributes(count)', function() {
 
+    it('creates an object even if there is a constructor', function() {
+      var user = factories.userWithConstructor.attributes();
+      user.name.should.equal('user name');
+      user.should.not.be.instanceOf(User);
+    });
 
-  describe('build(count)', function() {
+    it('creates an array of objects using the constructor if a number is passed', function() {
+      var users = factories.userWithConstructor.attributes(5);
+      users.should.be.an.instanceOf(Array);
+      users.length.should.equal(5);
+      for (var i in users) {
+        users[i].name.should.equal('user name');
+        users[i].should.not.be.an.instanceOf(User);
+      }
+    });
 
     it('creates an object based on the factory configuration', function() {
-      var user = factories.User.build();
-      user.name.should.equal('User name');
+      var user = factories.user.attributes();
+      user.name.should.equal('user name');
     });
 
     it('creates an array of objects if a number is passed', function() {
-      var users = factories.User.build(5);
+      var users = factories.user.attributes(5);
       users.should.be.an.instanceOf(Array);
       users.length.should.equal(5);
+      for (var i in users) {
+        users[i].name.should.equal('user name');
+        users[i].should.not.be.an.instanceOf(User);
+      }
+    });
+
+  });
+
+  describe('build(count)', function() {
+
+    it('creates an object using the given constructor', function() {
+      var user = factories.userWithConstructor.build();
+      user.should.be.instanceOf(User);
+      user.name.should.equal('user name');
+      user.upperName().should.equal('USER NAME');
+    });
+
+    it('creates an array of objects using the constructor if a number is passed', function() {
+      var users = factories.userWithConstructor.build(5);
+      users.should.be.an.instanceOf(Array);
+      users.length.should.equal(5);
+      for (var i in users) {
+        users[i].name.should.equal('user name');
+        users[i].should.be.an.instanceOf(User);
+      }
+    });
+ 
+    it('creates an object based on the factory configuration', function() {
+      var user = factories.user.build();
+      user.should.be.instanceOf(Object);
+      user.name.should.equal('user name');
+    });
+
+    it('creates an array of objects if a number is passed', function() {
+      var users = factories.user.build(5);
+      users.should.be.an.instanceOf(Array);
+      users.length.should.equal(5);
+      for (var i in users) {
+        users[i].should.be.an.instanceOf(Object);
+      }
     });
 
   });
@@ -73,21 +120,21 @@ describe('Building objects', function() {
   describe('attr(String, Object)', function() {
 
     it('overwrites predefined values', function() {
-      var user = factories.User.attr('name', 'other value').build();
+      var user = factories.user.attr('name', 'other value').build();
       user.name.should.equal('other value');
     });
 
     it('changes only the object which is currently built', function() {
-      var willy = factories.User.attr('name', 'Willy').build();
-      var martha = factories.User.attr('name', 'Martha').build();
-      var user = factories.User.build();
+      var willy = factories.user.attr('name', 'Willy').build();
+      var martha = factories.user.attr('name', 'Martha').build();
+      var user = factories.user.build();
       willy.name.should.equal('Willy');
       martha.name.should.equal('Martha');
-      user.name.should.equal('User name');
+      user.name.should.equal('user name');
     });
 
     it('is chainable', function() {
-      var willy = factories.User
+      var willy = factories.user
         .attr('name', 'Willy')
         .attr('age', 25)
         .build();
