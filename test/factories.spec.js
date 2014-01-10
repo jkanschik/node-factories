@@ -4,6 +4,9 @@ var factories = require('../lib');
 
 var User = function() {};
 User.prototype.upperName = function() { return this.name.toUpperCase(); };
+User.prototype.create = function(cb) {
+  process.nextTick(cb);
+};
 
 factories.define('user', {name: 'user name'});
 factories.define('userWithConstructor', User, {name: 'user name'});
@@ -113,6 +116,31 @@ describe('Building objects', function() {
       for (var i in users) {
         users[i].should.be.an.instanceOf(Object);
       }
+    });
+
+  });
+
+  describe('create(count)', function() {
+
+    it('creates an object and calls the .create() method on the object', function(done) {
+      factories.userWithConstructor.create(function(err, user) {
+        user.should.be.instanceOf(User);
+        user.name.should.equal('user name');
+        user.upperName().should.equal('USER NAME');
+        done(err);
+      });
+    });
+
+    it('creates an array of objects and calls the .create() method on each object if a number is passed', function(done) {
+      factories.userWithConstructor.create(5, function(err, users) {
+        users.should.be.an.instanceOf(Array);
+        users.length.should.equal(5);
+        for (var i in users) {
+          users[i].name.should.equal('user name');
+          users[i].should.be.an.instanceOf(User);
+        }
+        done(err);
+      });
     });
 
   });

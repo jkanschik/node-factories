@@ -37,6 +37,7 @@
     "grunt-contrib-watch": "~0.5.3"
   },
   "dependencies": {
-    "lodash-node": "~2.4.1"
+    "lodash-node": "~2.4.1",
+    "async": "~0.2.9"
   }
 }
