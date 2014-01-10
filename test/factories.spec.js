@@ -95,12 +95,11 @@ describe('Building objects', function() {
       willy.age.should.equal(25);
     });
 
-    xit('can be used to overwrite nested attributes using dot notation', function() {
+    it('can be used to overwrite nested attributes using dot notation', function() {
       factories.define('NestedDot', {level: 1, nested: {level: 2, nested: {level: 3}}});
       factories.NestedDot
         .attr('nested.nested.level', 4).build()
         .nested.nested.level.should.equal(4);
-
     });
 
   });
@@ -144,13 +143,13 @@ describe('Sequences', function() {
       .name.should.equal('Person_11');
   });
 
-  xit('can be used for nested attributes using dot notation', function() {
+  it('can be used for nested attributes using dot notation', function() {
     factories
       .define('withNestedSequence', {})
       .sequence('nested.name', function(i) {return 'Person_' + i;});
-    factories.withSequence.build()
+    factories.withNestedSequence.build()
       .nested.name.should.equal('Person_0');
-    factories.withSequence.build()
+    factories.withNestedSequence.build()
       .nested.name.should.equal('Person_1');
   });
 
