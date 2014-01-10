@@ -35,5 +35,8 @@
     "travis-cov": "~0.2.4",
     "grunt-cli": "~0.1.11",
     "grunt-contrib-watch": "~0.5.3"
+  },
+  "dependencies": {
+    "lodash-node": "~2.4.1"
   }
 }
