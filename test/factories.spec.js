@@ -184,6 +184,7 @@ describe('Building objects', function() {
 describe('Traits', function() {
   before(function() {
     factories.define('userWithTraits', {name: 'user name'})
+      .trait('admin', {isAdmin: true})
       .trait('male', {gender: 'male', name: 'Willy'})
       .trait('female', {gender: 'female', name: 'Martha'});
   });
@@ -195,11 +196,17 @@ describe('Traits', function() {
       .gender.should.equal('female');
   });
 
-  xit('can be built with syntactic sugar', function() {
-    factories.maleUserWithTraits.build()
+  it('can be built with syntactic sugar', function() {
+    factories.maleuserWithTraits.build()
       .should.eql({gender: 'male', name: 'Willy'});
-    factories.femaleUserWithTraits.build()
+    factories.femaleuserWithTraits.build()
       .gender.should.equal('female');
+  });
+
+  xit('can be built with syntactic sugar for combined traites', function() {
+    var femaleAdmin = factories.femaleAdminUserWithTraits.build();
+    femaleAdmin.gender.should.equal('female');
+    femaleAdmin.isAdmin.should.be(true);
   });
 
 });
