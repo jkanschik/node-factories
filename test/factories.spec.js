@@ -240,6 +240,17 @@ describe('Sequences', function() {
   });
 });
 
+describe('References to other factories', function() {
+  xit('is possible to refer to another factory in a factory definition', function() {
+    factories.define('Article', {
+      title: 'Some article',
+      author: factories.user
+    });
+    var article = factories.Article.build();
+    article.author.name.should.equal('user name');
+  });
+});
+
 describe('Inheritance of factories', function() {
 
 });
