@@ -197,9 +197,9 @@ describe('Traits', function() {
   });
 
   it('can be built with syntactic sugar', function() {
-    factories.maleuserWithTraits.build()
+    factories.maleUserWithTraits.build()
       .should.eql({gender: 'male', name: 'Willy'});
-    factories.femaleuserWithTraits.build()
+    factories.femaleUserWithTraits.build()
       .gender.should.equal('female');
   });
 
