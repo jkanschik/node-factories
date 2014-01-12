@@ -189,10 +189,10 @@ describe('Traits', function() {
   });
 
   it('can be built using .trait(name)', function() {
-    factories.userWithTraits.trait('male').build();
-//      .should.eql({gender: 'male', name: 'Willy'});
-    factories.userWithTraits.trait('female').build();
-//      .gender.should.equal('female');
+    factories.userWithTraits.trait('male').build()
+      .should.eql({gender: 'male', name: 'Willy'});
+    factories.userWithTraits.trait('female').build()
+      .gender.should.equal('female');
   });
 
   xit('can be built with syntactic sugar', function() {
