@@ -28,16 +28,16 @@
   },
   "dependencies": {
     "lodash-node": "~2.4.1",
-    "async": "~0.2.9"
+    "async": "^0.7"
   },
   "devDependencies": {
-    "should": "~2.1.1",
-    "grunt": "~0.4.2",
-    "grunt-mocha-test": "~0.8.1",
-    "grunt-contrib-jshint": "~0.8.0",
+    "should": "^3.3",
+    "grunt": "^0.4.4",
+    "grunt-mocha-test": "^0.10",
+    "grunt-contrib-jshint": "^0.10",
     "blanket": "~1.1.6",
     "travis-cov": "~0.2.4",
     "grunt-cli": "~0.1.11",
-    "grunt-contrib-watch": "~0.5.3"
+    "grunt-contrib-watch": "~0.6.1"
   }
 }
