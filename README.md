@@ -108,10 +108,8 @@ factories.define('user', {
   firstName: 'John',
   lastName: 'Doe',
   isAdmin: false
-}).trait({
-  'admin',
-  { isAdmin: true }
-});
+})
+.trait('admin', { isAdmin: true } );
 // build a normal user:
 factories.user.build();
 // and an admin:
