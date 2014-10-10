@@ -137,6 +137,24 @@ factories.otherObject.build().email
 // => person_1@example.com
 ```
 
+Sometimes, a factory has a sequence that needs to be reset.  This is especially true in multiple-test situations where some sequences have cyclical data (like day of week).  This is easily achieved by running factory.reset()
+
+```javascript
+var factories = require('factories');
+factories.define('userWithMail', {
+  firstName: 'John',
+  lastName: 'Doe'
+})
+.sequence('email', function(i) {return 'person_' + i + '@example.com'});
+// sequence starts with i=0:
+factories.userWithMail.build().email
+// => person_0@example.com
+factories.userWithMail.reset();
+factories.userWithMail.build().email
+// => person_0@example.com
+
+```
+
 ## Traits
 
 You can use traits for advanced configuration:

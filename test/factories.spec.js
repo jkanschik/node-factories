@@ -247,6 +247,25 @@ describe('Sequences', function() {
       .name.should.equal('Person_11');
   });
 
+  it('can be reset', function() {
+    factories
+      .define('withSequenceAndReset', {})
+      .sequence('name', function(i) {return 'Person_' + i;});
+    factories.withSequenceAndReset.build()
+      .name.should.equal('Person_0');
+    factories.withSequenceAndReset.build()
+      .name.should.equal('Person_1');
+    factories.withSequenceAndReset.build(10)[9]
+      .name.should.equal('Person_11');
+    factories.withSequenceAndReset.reset();
+    factories.withSequenceAndReset.build()
+      .name.should.equal('Person_0');
+    factories.withSequenceAndReset.build()
+      .name.should.equal('Person_1');
+    factories.withSequenceAndReset.build(10)[9]
+      .name.should.equal('Person_11');
+  });
+
   it('can be used for nested attributes using dot notation', function() {
     factories
       .define('withNestedSequence', {})
@@ -266,6 +285,19 @@ describe('Sequences', function() {
       .nameOfSequence.should.equal(0);
     factories.withGlobalSequence.build()
       .nameOfSequence.should.equal(1);
+  });
+  it('can reset globally', function () {
+    factories.sequence('nameOfSequence', function(i) {return i;});
+    factories
+      .define('withGlobalSequenceAndReset')
+      .sequence('nameOfSequence');
+    factories.withGlobalSequenceAndReset.build()
+      .nameOfSequence.should.equal(0);
+    factories.withGlobalSequenceAndReset.build()
+      .nameOfSequence.should.equal(1);
+    factories.withGlobalSequenceAndReset.reset();
+    factories.withGlobalSequenceAndReset.build()
+      .nameOfSequence.should.equal(0);
   });
 });
 
