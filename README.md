@@ -29,6 +29,24 @@ factories.user.build();
 factories.user.build(10);
 ```
 
+## Anonymous factories
+
+Sometimes, we don't want to save our factory in the global namespace.  'factories.build()' will allow the anonymous creation of a factory that can be saved to a variable.  While it cannot be retrieved if the variable is lost, it is no longer in the way in a project that has a large number of complicated tests.
+
+```javascript
+var factories = require('factories');
+var user_factory = factories.build({
+  firstName: 'John',
+  lastName: 'Doe',
+  isAdmin: false
+});
+// build a user:
+user_factory.build();
+// build an array of 10 users
+user_factory.build(10);
+```
+
+
 ## Building strategies
 
 There are different strategies to create a new object: 'attributes()' creates an Object with the attributes defined in the factory definition; 'build()' creates an Object with the prototype of the factory definition and 'create()' calls the 'create()' method on each object.
