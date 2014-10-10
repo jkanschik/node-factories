@@ -268,26 +268,26 @@ describe('Extending objects', function() {
 
     it('extends an object, attributes unaltered', function() {
       var user = factories.userWithConstructor.attributes();
-      var extended_user = factories.userWithConstructor.extend({name: 'extended user name'}).attributes();
+      var extendedUser = factories.userWithConstructor.extend({name: 'extended user name'}).attributes();
       user.name.should.equal('user name');
-      extended_user.name.should.equal('extended user name');
+      extendedUser.name.should.equal('extended user name');
       user.should.not.be.instanceOf(User);
     });
 
     it('extends an array of objects using the constructor if a number is passed', function() {
       var users = factories.userWithConstructor.attributes(5);
-      var extended_users = factories.userWithConstructor.extend({name: 'extended user name'}).attributes(5);
+      var extendedUsers = factories.userWithConstructor.extend({name: 'extended user name'}).attributes(5);
       users.should.be.an.instanceOf(Array);
       users.length.should.equal(5);
       for (var i in users) {
         users[i].name.should.equal('user name');
         users[i].should.not.be.an.instanceOf(User);
       }
-      extended_users.should.be.an.instanceOf(Array);
-      extended_users.length.should.equal(5);
-      for (var i in extended_users) {
-        extended_users[i].name.should.equal('extended user name');
-        extended_users[i].should.not.be.an.instanceOf(User);
+      extendedUsers.should.be.an.instanceOf(Array);
+      extendedUsers.length.should.equal(5);
+      for (var j in extendedUsers) {
+        extendedUsers[j].name.should.equal('extended user name');
+        extendedUsers[j].should.not.be.an.instanceOf(User);
       }
     });
   });
@@ -296,29 +296,29 @@ describe('Extending objects', function() {
 
     it('creates an object using the given constructor', function() {
       var user = factories.userWithConstructor.build();
-      var extended_user = factories.userWithConstructor.extend({name: 'extended user name'}).build();
+      var extendedUser = factories.userWithConstructor.extend({name: 'extended user name'}).build();
       user.should.be.instanceOf(User);
       user.name.should.equal('user name');
-      extended_user.should.be.instanceOf(User);
-      extended_user.name.should.equal('extended user name');
+      extendedUser.should.be.instanceOf(User);
+      extendedUser.name.should.equal('extended user name');
       user.upperName().should.equal('USER NAME');
-      extended_user.upperName().should.equal('EXTENDED USER NAME');
+      extendedUser.upperName().should.equal('EXTENDED USER NAME');
     });
 
     it('creates an array of objects using the constructor if a number is passed', function() {
       var users = factories.userWithConstructor.build(5);
-      var extended_users = factories.userWithConstructor.extend({name: 'extended user name'}).build(5);
+      var extendedUsers = factories.userWithConstructor.extend({name: 'extended user name'}).build(5);
       users.should.be.an.instanceOf(Array);
       users.length.should.equal(5);
       for (var i in users) {
         users[i].name.should.equal('user name');
         users[i].should.be.an.instanceOf(User);
       }
-      extended_users.should.be.an.instanceOf(Array);
-      extended_users.length.should.equal(5);
-      for (var i in extended_users) {
-        extended_users[i].name.should.equal('extended user name');
-        extended_users[i].should.be.an.instanceOf(User);
+      extendedUsers.should.be.an.instanceOf(Array);
+      extendedUsers.length.should.equal(5);
+      for (var j in extendedUsers) {
+        extendedUsers[j].name.should.equal('extended user name');
+        extendedUsers[j].should.be.an.instanceOf(User);
       }
     });
   });
@@ -327,10 +327,10 @@ describe('Extending objects', function() {
     var count = 0;
     factories.define('extendWithFunction', {lazy: function() { count++; return count; }});
     count.should.equal(0);
-    var obj_extended = factories.extendWithFunction.extend({lazy: function() { return 42; } }).build();
-    var obj_extended2 = factories.extendWithFunction.extend({lazy: 84 }).build();
-    obj_extended.should.eql({lazy: 42});
-    obj_extended2.should.eql({lazy: 84});
+    var objExtended = factories.extendWithFunction.extend({lazy: function() { return 42; } }).build();
+    var objExtended2 = factories.extendWithFunction.extend({lazy: 84 }).build();
+    objExtended.should.eql({lazy: 42});
+    objExtended2.should.eql({lazy: 84});
     count.should.equal(0);
     var obj1 = factories.extendWithFunction.build();
     var obj2 = factories.extendWithFunction.build();
