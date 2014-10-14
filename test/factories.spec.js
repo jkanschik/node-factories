@@ -394,4 +394,19 @@ describe('Extending objects', function() {
 
   });
 
+  describe('dependent factory behavior', function() {
+    var dependentFactory = factories.build({
+      first: 2,
+      second: 4,
+      sum: function() { return this.first+this.second; },
+      double: function() { return this.sum * 2; }
+    });
+    
+    var objDependent = dependentFactory.build();
+    objDependent.first.should.eql(2);
+    objDependent.second.should.eql(4);
+    objDependent.sum.should.eql(6);
+    objDependent.double.should.eql(12);
+  });
+
 });
