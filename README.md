@@ -243,4 +243,4 @@ userFactory.afterCreate(function(object,createdObject,cb) {
 });
 ```
 
-A few notes about these hooks.  If you do not provide a value for object (or createdObject for create()) in the return or callback, the previous value will be reassigned to it.  If you do not run the callback in afterCreate, then create() will never respond with its callback.
+A few notes about these hooks.  If you do not provide a value for object (or createdObject for create()) in the return or callback, the previous value will be reassigned to it.  If you do not run the callback in afterCreate, then create() will never respond with its callback.  Finally, all assigned hooks will be run in the order they were added.
