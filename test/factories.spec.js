@@ -315,6 +315,30 @@ describe('References to other factories', function() {
   });
 });
 
+describe('Lazy creation', function() {
+    it('allows attributes to be set lazily when .create() is used',function(done) {
+        var Lazy = function() {};
+        Lazy.prototype.create = function(cb) {
+          process.nextTick(function() { cb(null,{a: 1,b: 2}) });
+        };
+
+        factories.define('LazyTest',Lazy,{
+            c: function() { return 3; },
+            //d: function(cb) { return cb && cb(4); },
+        });
+
+        factories.LazyTest.create(function(err,obj,created) {
+            created.a.should.eql(1);
+            created.b.should.eql(2);
+            console.dir(obj);
+            console.dir(created);
+//            created.c.should.eql(3);
+//            created.d.should.eql(4);
+        });
+
+    });
+});
+
 describe('Inheritance of factories', function() {
 
 });
