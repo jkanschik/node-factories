@@ -7,7 +7,9 @@ User.prototype.upperName = function() { return this.name.toUpperCase(); };
 User.prototype.create = function(cb) {
     var self = this;
   process.nextTick(function() {
-    cb(null,{ name: self.name,built: 1 });
+    var newUser = self;
+    newUser.built = 1;
+    cb(null,newUser);
   });
 };
 
@@ -317,23 +319,19 @@ describe('References to other factories', function() {
 
 describe('Lazy creation', function() {
     it('allows attributes to be set lazily when .create() is used',function(done) {
-        var Lazy = function() {};
-        Lazy.prototype.create = function(cb) {
-          process.nextTick(function() { cb(null,{a: 1,b: 2}) });
-        };
 
-        factories.define('LazyTest',Lazy,{
-            c: function() { return 3; },
-            //d: function(cb) { return cb && cb(4); },
+        factories.define('LazyTest',User,{
+            a: 3,
+            b: function() { return 4; },
+            c: function(cb) { return cb && cb(5); },
         });
 
         factories.LazyTest.create(function(err,obj,created) {
-            created.a.should.eql(1);
-            created.b.should.eql(2);
-            console.dir(obj);
-            console.dir(created);
-//            created.c.should.eql(3);
-//            created.d.should.eql(4);
+            created.a.should.eql(3);
+            created.b.should.eql(4);
+            created.c.should.eql(5);
+            created.built.should.eql(1);
+            done();
         });
 
     });
@@ -344,7 +342,6 @@ describe('Inheritance of factories', function() {
 });
 
 describe('Extending objects', function() {
-  
   describe('attributes(count)', function() {
 
     it('extends an object, attributes unaltered', function() {
@@ -438,6 +435,7 @@ describe('Extending objects', function() {
 
   describe('after hooks', function() {
     describe('afterAttributes', function() {
+        
         var afterAttributesFactoryRan = 0;
         var afterAttributesFactory = factories.build({
             x: function() { return 6*7; }
