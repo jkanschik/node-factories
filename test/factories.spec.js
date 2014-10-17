@@ -518,5 +518,27 @@ describe('Extending objects', function() {
             });
         });
     });
+    describe('Factory Level', function() {
+        factories.define('addItAll',User,{x: 1})
+        .afterAttributes(function(obj) {
+            obj.y = 2;
+            return obj;
+        })
+        .afterBuild(function(obj) {
+            obj.z = 3;
+            return obj;
+        })
+        .afterCreate(function(obj,created,cb) {
+            obj.cb = 3;
+            cb(obj);
+        });
+
+        factories.addItAll.create(function(err,obj,etc) {
+            etc.x.should.eql(1);
+            etc.y.should.eql(2);
+            etc.z.should.eql(3);
+            etc.cb.should.eql(3);
+        });
+    });
   });
 });
