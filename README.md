@@ -80,6 +80,18 @@ factories.define('user', {
 });
 ```
 
+There is a special case with lazy attributes.  If .create() is called, and the lazy prototype includes an argument, that argument will be treated as a callback, and its asynchronous return value will populate the attribute instead.  This allows for asynchronous functions to be run within the building of the factory.
+
+```javascript
+factories.define('company', Company, {
+  // ...
+});
+factories.define('user', User, {
+  // ...
+  company: function(cb) { factories.Company.create(function(err,obj,created) { return cb && cb(created.id); } }
+});
+```
+
 ## Dependent Attributes
 
 When a factory is being built, the lazy attributes have access to the in-progress object using the variable 'this'.
