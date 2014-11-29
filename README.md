@@ -80,6 +80,27 @@ factories.define('user', {
 });
 ```
 
+## Extending Attributes
+
+Sometimes, there is a need to create multiple similar objects from the same factory where those objects are otherwise too distinct or interrelated for sequences. In such a situation, it is useful (and a common pattern) to override some or all of the fields, while still maintaining the power of the factories (including support for sequences and traits).
+
+
+```javascript
+var factories = require('factories');
+factories.define('user', {
+  firstName: 'John',
+  lastName: 'Doe',
+  isAdmin: false
+});
+// build a user:
+factories.user.build();
+// build a user named "Joe Doe"
+factories.user.extend({firstName: "Joe"});
+// build another user named "John Doe"
+factories.user.build();
+```
+
+
 ## Sequences
 
 Sequences are used to generate unique values (as opposed to the users above, which all have the same name). Basically, node-factories maintains a counter for each sequence which is increased anytime an object is created. This counter is passed to a function, which determines the actual attribute value.
