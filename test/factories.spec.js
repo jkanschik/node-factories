@@ -145,6 +145,28 @@ describe('Building objects', function() {
 
   });
 
+  describe('anonymous Factories.build no constructor', function() {
+      var userFactory = factories.build({name: 'anonymous factory user'});
+      var user = userFactory.attributes();
+      user.should.not.be.instanceOf(User);
+      user.name.should.equal('anonymous factory user');
+  });
+
+  describe('anonymous Factories.build attributes', function() {
+      var userFactory = factories.build(User,{name: 'anonymous factory user'});
+      var user = userFactory.attributes();
+      user.should.not.be.instanceOf(User);
+      user.name.should.equal('anonymous factory user');
+  });
+
+  describe('anonymous Factories.build', function() {
+      var userFactory = factories.build(User,{name: 'anonymous factory user'});
+      var user = userFactory.build();
+      user.should.be.instanceOf(User);
+      user.name.should.equal('anonymous factory user');
+      user.upperName().should.equal('ANONYMOUS FACTORY USER');
+  });
+
   describe('attr(String, Object)', function() {
 
     it('overwrites predefined values', function() {
