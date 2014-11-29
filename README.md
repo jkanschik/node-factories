@@ -80,6 +80,21 @@ factories.define('user', {
 });
 ```
 
+## Dependent Attributes
+
+When a factory is being built, the lazy attributes have access to the in-progress object using the variable 'this'.
+
+```javascript
+var factories = require('factories');
+factories.define('user', {
+  firstName: 'John',
+  lastName: 'Doe',
+  email: function() { return this.firstName + "." + this.lastName + "@example.com"; }
+});
+// build a user:
+factories.user.build();
+```
+
 ## Extending Attributes
 
 Sometimes, there is a need to create multiple similar objects from the same factory where those objects are otherwise too distinct or interrelated for sequences. In such a situation, it is useful (and a common pattern) to override some or all of the fields, while still maintaining the power of the factories (including support for sequences and traits).
