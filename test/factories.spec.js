@@ -5,11 +5,11 @@ var factories = require('../lib');
 var User = function() {};
 User.prototype.upperName = function() { return this.name.toUpperCase(); };
 User.prototype.create = function(cb) {
-    var self = this;
+  var self = this;
   process.nextTick(function() {
     var newUser = self;
     newUser.built = 1;
-    cb(null,newUser);
+    cb(null, newUser);
   });
 };
 
@@ -53,7 +53,7 @@ describe('Definition of factories', function() {
 });
 
 describe('Building objects', function() {
-  
+
   describe('attributes(count)', function() {
 
     it('creates an object even if there is a constructor', function() {
@@ -107,7 +107,7 @@ describe('Building objects', function() {
         users[i].should.be.an.instanceOf(User);
       }
     });
- 
+
     it('creates an object based on the factory configuration', function() {
       var user = factories.user.build();
       user.should.be.instanceOf(Object);
@@ -136,7 +136,7 @@ describe('Building objects', function() {
       });
     });
 
-    it('creates an array of objects and calls the .create() method on each object if a number is passed', function(done) {
+    it('creates an array of objects and calls .create() method on each object if a number is passed', function(done) {
       factories.userWithConstructor.create(5, function(err, users) {
         users.should.be.an.instanceOf(Array);
         users.length.should.equal(5);
@@ -151,25 +151,25 @@ describe('Building objects', function() {
   });
 
   describe('anonymous Factories.build no constructor', function() {
-      var userFactory = factories.build({name: 'anonymous factory user'});
-      var user = userFactory.attributes();
-      user.should.not.be.instanceOf(User);
-      user.name.should.equal('anonymous factory user');
+    var userFactory = factories.build({name: 'anonymous factory user'});
+    var user = userFactory.attributes();
+    user.should.not.be.instanceOf(User);
+    user.name.should.equal('anonymous factory user');
   });
 
   describe('anonymous Factories.build attributes', function() {
-      var userFactory = factories.build(User,{name: 'anonymous factory user'});
-      var user = userFactory.attributes();
-      user.should.not.be.instanceOf(User);
-      user.name.should.equal('anonymous factory user');
+    var userFactory = factories.build(User, {name: 'anonymous factory user'});
+    var user = userFactory.attributes();
+    user.should.not.be.instanceOf(User);
+    user.name.should.equal('anonymous factory user');
   });
 
   describe('anonymous Factories.build', function() {
-      var userFactory = factories.build(User,{name: 'anonymous factory user'});
-      var user = userFactory.build();
-      user.should.be.instanceOf(User);
-      user.name.should.equal('anonymous factory user');
-      user.upperName().should.equal('ANONYMOUS FACTORY USER');
+    var userFactory = factories.build(User, {name: 'anonymous factory user'});
+    var user = userFactory.build();
+    user.should.be.instanceOf(User);
+    user.name.should.equal('anonymous factory user');
+    user.upperName().should.equal('ANONYMOUS FACTORY USER');
   });
 
   describe('attr(String, Object)', function() {
@@ -291,7 +291,7 @@ describe('Sequences', function() {
     factories.withGlobalSequence.build()
       .nameOfSequence.should.equal(1);
   });
-  it('can reset globally', function () {
+  it('can reset globally', function() {
     factories.sequence('nameOfSequence', function(i) {return i;});
     factories
       .define('withGlobalSequenceAndReset')
@@ -318,23 +318,23 @@ describe('References to other factories', function() {
 });
 
 describe('Lazy creation', function() {
-    it('allows attributes to be set lazily when .create() is used',function(done) {
+  it('allows attributes to be set lazily when .create() is used', function(done) {
 
-        factories.define('LazyTest',User,{
-            a: 3,
-            b: function() { return 4; },
-            c: function(cb) { return cb && cb(5); },
-        });
-
-        factories.LazyTest.create(function(err,obj,created) {
-            created.a.should.eql(3);
-            created.b.should.eql(4);
-            created.c.should.eql(5);
-            created.built.should.eql(1);
-            done();
-        });
-
+    factories.define('LazyTest', User, {
+      a: 3,
+      b: function() { return 4; },
+      c: function(cb) { return cb && cb(5); }
     });
+
+    factories.LazyTest.create(function(err, obj, created) {
+      created.a.should.eql(3);
+      created.b.should.eql(4);
+      created.c.should.eql(5);
+      created.built.should.eql(1);
+      done();
+    });
+
+  });
 });
 
 describe('Inheritance of factories', function() {
@@ -374,7 +374,9 @@ describe('Extending objects', function() {
 
     it('creates an object using the given constructor', function() {
       var user = factories.userWithConstructor.build();
-      var extendedUser = factories.userWithConstructor.extend({name: 'extended user name'}).build();
+      var extendedUser = factories.userWithConstructor
+        .extend({name: 'extended user name'})
+        .build();
       user.should.be.instanceOf(User);
       user.name.should.equal('user name');
       extendedUser.should.be.instanceOf(User);
@@ -385,7 +387,9 @@ describe('Extending objects', function() {
 
     it('creates an array of objects using the constructor if a number is passed', function() {
       var users = factories.userWithConstructor.build(5);
-      var extendedUsers = factories.userWithConstructor.extend({name: 'extended user name'}).build(5);
+      var extendedUsers = factories.userWithConstructor
+        .extend({name: 'extended user name'})
+        .build(5);
       users.should.be.an.instanceOf(Array);
       users.length.should.equal(5);
       for (var i in users) {
@@ -403,10 +407,16 @@ describe('Extending objects', function() {
 
   describe('extend suppresses lazy behavior', function() {
     var count = 0;
-    factories.define('extendWithFunction', {lazy: function() { count++; return count; }});
+    factories.define('extendWithFunction', {
+      lazy: function() { count++; return count; }
+    });
     count.should.equal(0);
-    var objExtended = factories.extendWithFunction.extend({lazy: function() { return 42; } }).build();
-    var objExtended2 = factories.extendWithFunction.extend({lazy: 84 }).build();
+    var objExtended = factories.extendWithFunction
+      .extend({lazy: function() { return 42; }})
+      .build();
+    var objExtended2 = factories.extendWithFunction
+      .extend({lazy: 84})
+      .build();
     objExtended.should.eql({lazy: 42});
     objExtended2.should.eql({lazy: 84});
     count.should.equal(0);
@@ -422,10 +432,10 @@ describe('Extending objects', function() {
     var dependentFactory = factories.build({
       first: 2,
       second: 4,
-      sum: function() { return this.first+this.second; },
+      sum: function() { return this.first + this.second; },
       double: function() { return this.sum * 2; }
     });
-    
+
     var objDependent = dependentFactory.build();
     objDependent.first.should.eql(2);
     objDependent.second.should.eql(4);
@@ -435,110 +445,113 @@ describe('Extending objects', function() {
 
   describe('after hooks', function() {
     describe('afterAttributes', function() {
-        
-        var afterAttributesFactoryRan = 0;
-        var afterAttributesFactory = factories.build({
-            x: function() { return 6*7; }
-        });
-        afterAttributesFactory.afterAttributes(function(obj) {
-            afterAttributesFactoryRan+=1;
-            obj.x.should.eql(42);
-            obj.x = obj.x+1;
-            return obj;
-        });
-        afterAttributesFactory.afterAttributes(function(obj) {
-            afterAttributesFactoryRan+=1;
-            obj.x.should.eql(43);
-        });
 
-        it('afterAttributes fires with the right data',function(done) {
-            var obj = afterAttributesFactory.attributes();
-            obj.x.should.eql(43);
-            afterAttributesFactoryRan.should.eql(2);
-            done();
-        });
+      var afterAttributesFactoryRan = 0;
+      var afterAttributesFactory = factories.build({
+        x: function() { return 6 * 7; }
+      });
+      afterAttributesFactory.afterAttributes(function(obj) {
+        afterAttributesFactoryRan += 1;
+        obj.x.should.eql(42);
+        obj.x = obj.x + 1;
+        return obj;
+      });
+      afterAttributesFactory.afterAttributes(function(obj) {
+        afterAttributesFactoryRan += 1;
+        obj.x.should.eql(43);
+      });
+
+      it('afterAttributes fires with the right data', function(done) {
+        var obj = afterAttributesFactory.attributes();
+        obj.x.should.eql(43);
+        afterAttributesFactoryRan.should.eql(2);
+        done();
+      });
 
     });
     describe('afterBuild', function() {
-        var afterBuildFactoryRan = 0;
-        var afterBuildFactory = factories.build({
-            x: function() { return 6*7; }
-        });
-        afterBuildFactory.afterBuild(function(obj) {
-            afterBuildFactoryRan+=1;
-            obj.y.should.eql(42);
-            obj.y = obj.y + 1;
-            return obj;
-        });
-        afterBuildFactory.afterBuild(function(obj) {
-            afterBuildFactoryRan+=1;
-            obj.y.should.eql(43);
-        });
-        afterBuildFactory.afterAttributes(function(obj) {
-            afterBuildFactoryRan+=1;
-            obj.x.should.eql(42);
-            obj.y = obj.x;
-            return obj;
-        });
+      var afterBuildFactoryRan = 0;
+      var afterBuildFactory = factories.build({
+        x: function() { return 6 * 7; }
+      });
+      afterBuildFactory.afterBuild(function(obj) {
+        afterBuildFactoryRan += 1;
+        obj.y.should.eql(42);
+        obj.y = obj.y + 1;
+        return obj;
+      });
+      afterBuildFactory.afterBuild(function(obj) {
+        afterBuildFactoryRan += 1;
+        obj.y.should.eql(43);
+      });
+      afterBuildFactory.afterAttributes(function(obj) {
+        afterBuildFactoryRan += 1;
+        obj.x.should.eql(42);
+        obj.y = obj.x;
+        return obj;
+      });
 
-        it('afterBuild fires with the right data',function(done) {
-            var obj = afterBuildFactory.build();
-            obj.x.should.eql(42);
-            obj.y.should.eql(43);
-            afterBuildFactoryRan.should.eql(3);
-            done();
-        });
-
+      it('afterBuild fires with the right data', function(done) {
+        var obj = afterBuildFactory.build();
+        obj.x.should.eql(42);
+        obj.y.should.eql(43);
+        afterBuildFactoryRan.should.eql(3);
+        done();
+      });
     });
+
     describe('afterCreate', function() {
-        var afterCreateFactoryRan = 0;
-        var afterCreateFactory = factories.build(User, {name: function() { return 'user name'; } });
-        afterCreateFactory.afterCreate(function(obj,created,cb) {
-                afterCreateFactoryRan+=1;
-                created.x = 1;
-                cb(null,obj,created);
-        });
-        afterCreateFactory.afterCreate(function(obj,created,cb) {
-            afterCreateFactoryRan+=1;
-            cb();
-        });
-        afterCreateFactory.afterCreate(function(obj,created,cb) {
-                created.x.should.eql(1);
-                afterCreateFactoryRan+=1;
-                created.y = 2;
-                cb(null,obj,created);
-        });
+      var afterCreateFactoryRan = 0;
+      var afterCreateFactory = factories.build(User, {
+        name: function() { return 'user name'; }
+      });
+      afterCreateFactory.afterCreate(function(obj, created, cb) {
+        afterCreateFactoryRan += 1;
+        created.x = 1;
+        cb(null, obj, created);
+      });
+      afterCreateFactory.afterCreate(function(obj, created, cb) {
+        afterCreateFactoryRan += 1;
+        cb();
+      });
+      afterCreateFactory.afterCreate(function(obj, created, cb) {
+        created.x.should.eql(1);
+        afterCreateFactoryRan += 1;
+        created.y = 2;
+        cb(null, obj, created);
+      });
 
-        it('works', function(done) {
-            afterCreateFactory.create(function(err,obj,etc) {
-                afterCreateFactoryRan.should.eql(3);
-                etc.built.should.eql(1);
-                etc.y.should.eql(2);
-                done();
-            });
+      it('works', function(done) {
+        afterCreateFactory.create(function(err, obj, etc) {
+          afterCreateFactoryRan.should.eql(3);
+          etc.built.should.eql(1);
+          etc.y.should.eql(2);
+          done();
         });
+      });
     });
-    describe('Factory Level', function() {
-        factories.define('addItAll',User,{x: 1})
-        .afterAttributes(function(obj) {
-            obj.y = 2;
-            return obj;
-        })
-        .afterBuild(function(obj) {
-            obj.z = 3;
-            return obj;
-        })
-        .afterCreate(function(obj,created,cb) {
-            obj.cb = 3;
-            cb(obj);
-        });
 
-        factories.addItAll.create(function(err,obj,etc) {
-            etc.x.should.eql(1);
-            etc.y.should.eql(2);
-            etc.z.should.eql(3);
-            etc.cb.should.eql(3);
-        });
+    describe('Factory Level', function() {
+      factories.define('addItAll', User, {x: 1})
+      .afterAttributes(function(obj) {
+        obj.y = 2;
+        return obj;
+      })
+      .afterBuild(function(obj) {
+        obj.z = 3;
+        return obj;
+      })
+      .afterCreate(function(obj, created, cb) {
+        obj.cb = 3;
+        cb(obj);
+      });
+
+      factories.addItAll.create(function(err, obj, etc) {
+        etc.x.should.eql(1);
+        etc.y.should.eql(2);
+        etc.z.should.eql(3);
+        etc.cb.should.eql(3);
+      });
     });
   });
 });
