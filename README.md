@@ -80,6 +80,18 @@ factories.define('user', {
 });
 ```
 
+There is a special case with lazy attributes.  If .create() is called, and the lazy prototype includes an argument, that argument will be treated as a callback, and its asynchronous return value will populate the attribute instead.  This allows for asynchronous functions to be run within the building of the factory.
+
+```javascript
+factories.define('company', Company, {
+  // ...
+});
+factories.define('user', User, {
+  // ...
+  company: function(cb) { factories.Company.create(function(err,obj,created) { return cb && cb(created.id); } }
+});
+```
+
 ## Dependent Attributes
 
 When a factory is being built, the lazy attributes have access to the in-progress object using the variable 'this'.
@@ -187,3 +199,60 @@ factories.user.build();
 // and an admin:
 factories.user.trait('admin').build();
 ```
+
+
+## After Hooks
+
+Sometimes, a factory just can't do everything you need, when you need it.  It cannot, for example, be used to automatically generate 1-to-many data against itself based upon the primary key.
+
+```javascript
+var factories = require('factories');
+factories.define('user', User, {
+  firstName: 'John',
+  lastName: 'Doe',
+  posts: function() {
+    var user_id = this.id; //note, this doesn't work!
+    factories.post.extend({id: user_id}).build(); //Which makes this impossible!
+  }
+});
+```
+
+The only correct solution, if you want to use the factory to build data like this, is to utilize after hooks.
+
+```javascript
+var factories = require('factories');
+factories.define('user', User, {
+  firstName: 'John',
+  lastName: 'Doe',
+}).afterCreate(function(object,createdObject,cb) {
+  var user_id = this.id; //note, this does work!
+  factories.post.extend({id: user_id}).build();
+  cb();
+});
+```
+
+The node-factories library supports 3 kinds of callback hooks. afterAttributes() adds a procedural hook after any build method has been called; afterBuild() adds a procedural hook after build() or create() (and it runs after the afterAttributes());  afterCalls adds an asynchronous hook after create() is called (and it runs after afterBuild() ).
+
+
+```javascript
+var factories = require('factories');
+var userFactory = factories.define('user', User, {
+  firstName: 'John',
+  lastName: 'Doe',
+});
+userFactory.afterAttributes(function(object) {
+  object.email = object.firstName + "." + object.lastName + "@example.com";
+  return object;
+});
+userFactory.afterBuild(function(object) {
+  object.id = 1; //This is not normally how you assign id, but it makes the afterCreate work in this contrived example.
+  return object;
+});
+userFactory.afterCreate(function(object,createdObject,cb) {
+  var user_id = this.id; //note, this does work!
+  factories.post.extend({id: user_id}).build();
+  cb();
+});
+```
+
+A few notes about these hooks.  If you do not provide a value for object (or createdObject for create()) in the return or callback, the previous value will be reassigned to it.  If you do not run the callback in afterCreate, then create() will never respond with its callback.  Finally, all assigned hooks will be run in the order they were added.

@@ -5,7 +5,12 @@ var factories = require('../lib');
 var User = function() {};
 User.prototype.upperName = function() { return this.name.toUpperCase(); };
 User.prototype.create = function(cb) {
-  process.nextTick(cb);
+    var self = this;
+  process.nextTick(function() {
+    var newUser = self;
+    newUser.built = 1;
+    cb(null,newUser);
+  });
 };
 
 factories.define('user', {name: 'user name'});
@@ -312,12 +317,31 @@ describe('References to other factories', function() {
   });
 });
 
+describe('Lazy creation', function() {
+    it('allows attributes to be set lazily when .create() is used',function(done) {
+
+        factories.define('LazyTest',User,{
+            a: 3,
+            b: function() { return 4; },
+            c: function(cb) { return cb && cb(5); },
+        });
+
+        factories.LazyTest.create(function(err,obj,created) {
+            created.a.should.eql(3);
+            created.b.should.eql(4);
+            created.c.should.eql(5);
+            created.built.should.eql(1);
+            done();
+        });
+
+    });
+});
+
 describe('Inheritance of factories', function() {
 
 });
 
 describe('Extending objects', function() {
-  
   describe('attributes(count)', function() {
 
     it('extends an object, attributes unaltered', function() {
@@ -409,4 +433,112 @@ describe('Extending objects', function() {
     objDependent.double.should.eql(12);
   });
 
+  describe('after hooks', function() {
+    describe('afterAttributes', function() {
+        
+        var afterAttributesFactoryRan = 0;
+        var afterAttributesFactory = factories.build({
+            x: function() { return 6*7; }
+        });
+        afterAttributesFactory.afterAttributes(function(obj) {
+            afterAttributesFactoryRan+=1;
+            obj.x.should.eql(42);
+            obj.x = obj.x+1;
+            return obj;
+        });
+        afterAttributesFactory.afterAttributes(function(obj) {
+            afterAttributesFactoryRan+=1;
+            obj.x.should.eql(43);
+        });
+
+        it('afterAttributes fires with the right data',function(done) {
+            var obj = afterAttributesFactory.attributes();
+            obj.x.should.eql(43);
+            afterAttributesFactoryRan.should.eql(2);
+            done();
+        });
+
+    });
+    describe('afterBuild', function() {
+        var afterBuildFactoryRan = 0;
+        var afterBuildFactory = factories.build({
+            x: function() { return 6*7; }
+        });
+        afterBuildFactory.afterBuild(function(obj) {
+            afterBuildFactoryRan+=1;
+            obj.y.should.eql(42);
+            obj.y = obj.y + 1;
+            return obj;
+        });
+        afterBuildFactory.afterBuild(function(obj) {
+            afterBuildFactoryRan+=1;
+            obj.y.should.eql(43);
+        });
+        afterBuildFactory.afterAttributes(function(obj) {
+            afterBuildFactoryRan+=1;
+            obj.x.should.eql(42);
+            obj.y = obj.x;
+            return obj;
+        });
+
+        it('afterBuild fires with the right data',function(done) {
+            var obj = afterBuildFactory.build();
+            obj.x.should.eql(42);
+            obj.y.should.eql(43);
+            afterBuildFactoryRan.should.eql(3);
+            done();
+        });
+
+    });
+    describe('afterCreate', function() {
+        var afterCreateFactoryRan = 0;
+        var afterCreateFactory = factories.build(User, {name: function() { return 'user name'; } });
+        afterCreateFactory.afterCreate(function(obj,created,cb) {
+                afterCreateFactoryRan+=1;
+                created.x = 1;
+                cb(null,obj,created);
+        });
+        afterCreateFactory.afterCreate(function(obj,created,cb) {
+            afterCreateFactoryRan+=1;
+            cb();
+        });
+        afterCreateFactory.afterCreate(function(obj,created,cb) {
+                created.x.should.eql(1);
+                afterCreateFactoryRan+=1;
+                created.y = 2;
+                cb(null,obj,created);
+        });
+
+        it('works', function(done) {
+            afterCreateFactory.create(function(err,obj,etc) {
+                afterCreateFactoryRan.should.eql(3);
+                etc.built.should.eql(1);
+                etc.y.should.eql(2);
+                done();
+            });
+        });
+    });
+    describe('Factory Level', function() {
+        factories.define('addItAll',User,{x: 1})
+        .afterAttributes(function(obj) {
+            obj.y = 2;
+            return obj;
+        })
+        .afterBuild(function(obj) {
+            obj.z = 3;
+            return obj;
+        })
+        .afterCreate(function(obj,created,cb) {
+            obj.cb = 3;
+            cb(obj);
+        });
+
+        factories.addItAll.create(function(err,obj,etc) {
+            etc.x.should.eql(1);
+            etc.y.should.eql(2);
+            etc.z.should.eql(3);
+            etc.cb.should.eql(3);
+        });
+    });
+  });
 });
