@@ -104,7 +104,10 @@ factories.define('user', {
   email: function() { return this.firstName + "." + this.lastName + "@example.com"; }
 });
 // build a user:
-factories.user.build();
+var user = factories.user.build();
+// email is a string attribute, not a function:
+user.email;
+// => 'John.Doe@example.com'
 ```
 
 ## Extending Attributes
@@ -121,6 +124,7 @@ factories.define('user', {
 });
 // build a user:
 factories.user.build();
+// => John Doe
 // build a user named "Joe Doe"
 factories.user.extend({firstName: "Joe"});
 // build another user named "John Doe"
@@ -179,7 +183,6 @@ factories.userWithMail.build().email
 factories.userWithMail.reset();
 factories.userWithMail.build().email
 // => person_0@example.com
-
 ```
 
 ## Traits
