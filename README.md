@@ -234,7 +234,7 @@ factories.define('user', User, {
 });
 ```
 
-The node-factories library supports 3 kinds of callback hooks. afterAttributes() adds a procedural hook after any build method has been called; afterBuild() adds a procedural hook after build() or create() (and it runs after the afterAttributes());  afterCalls adds an asynchronous hook after create() is called (and it runs after afterBuild() ).
+The node-factories library supports 3 kinds of callback hooks. afterAttributes() adds a procedural hook after any build method has been called; afterBuild() adds a procedural hook after build() or create() (and it runs after the afterAttributes());  afterCreate() adds an asynchronous hook after create() is called (and it runs after afterBuild() ).
 
 
 ```javascript
@@ -244,6 +244,7 @@ var userFactory = factories.define('user', User, {
   lastName: 'Doe',
 });
 userFactory.afterAttributes(function(object) {
+  // just another way to define a lazy attribute
   object.email = object.firstName + "." + object.lastName + "@example.com";
   return object;
 });
