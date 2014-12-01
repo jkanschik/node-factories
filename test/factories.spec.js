@@ -1,5 +1,5 @@
 'use strict';
-require('should');
+var should = require('should');
 var factories = require('../lib');
 
 var User = function() {};
@@ -49,6 +49,16 @@ describe('Definition of factories', function() {
   it('can be defined without template', function() {
     factories.define('withoutTemplate');
     factories.withoutTemplate.build().should.eql({});
+  });
+
+  it('cannot be defined twice', function() {
+    factories.define('singleton');
+    try {
+      factories.define('singleton');
+      should.fail('An error should have been thrown for duplicate factory definitions.');
+    } catch (err) {
+      err.message.should.eql('Factory singleton already defined!');
+    }
   });
 });
 
@@ -252,7 +262,7 @@ describe('Sequences', function() {
       .name.should.equal('Person_11');
   });
 
-  it('can be reset', function() {
+  it('can be reset()', function() {
     factories
       .define('withSequenceAndReset', {})
       .sequence('name', function(i) {return 'Person_' + i;});
@@ -281,6 +291,20 @@ describe('Sequences', function() {
       .nested.name.should.equal('Person_1');
   });
 
+  // The following test can be enabled if the behaviour is clarified
+  // https://github.com/jkanschik/node-factories/issues/10
+  xit('works without explicit converter', function() {
+    factories
+      .define('sequenceWithoutConverter', {})
+      .sequence('number');
+    factories.withSequence.build()
+      .number.should.equal(0);
+    factories.withSequence.build()
+      .number.should.equal(1);
+    factories.withSequence.build(10)[9]
+      .number.should.equal(11);
+  });
+
   it('can be defined globally for all factories', function() {
     factories.sequence('nameOfSequence', function(i) {return i;});
     factories
@@ -291,7 +315,8 @@ describe('Sequences', function() {
     factories.withGlobalSequence.build()
       .nameOfSequence.should.equal(1);
   });
-  it('can reset globally', function() {
+
+  it('can reset() globally', function() {
     factories.sequence('nameOfSequence', function(i) {return i;});
     factories
       .define('withGlobalSequenceAndReset')
